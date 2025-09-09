@@ -43,6 +43,6 @@
     "prettier-plugin-tailwindcss": "^0.5.7"
   },
   "keywords": ["task-manager", "nextjs", "react", "tailwindcss", "typescript"],
-  "author": "Tu Nombre",
+  "author": "Masterkprod",
   "license": "MIT"
 }
