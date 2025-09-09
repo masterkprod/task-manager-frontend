@@ -64,10 +64,8 @@ export interface PaginationResponse {
 
 export interface PaginatedResponse<T> {
   success: boolean;
-  data: {
-    [key: string]: T[];
-    pagination: PaginationResponse;
-  };
+  data: T[];
+  pagination: PaginationResponse;
 }
 
 export interface LoginForm {
