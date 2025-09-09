@@ -132,8 +132,8 @@ export function useTasks(filters?: TaskFilters) {
 
   return {
     // Datos
-    tasks: tasksData?.data?.tasks || [],
-    pagination: tasksData?.data?.pagination,
+    tasks: tasksData?.data || [],
+    pagination: tasksData?.pagination,
     stats: statsData?.data?.stats as TaskStats | undefined,
     filters: currentFilters,
 
@@ -229,7 +229,7 @@ export function useTask(id: string) {
   }, [deleteTaskMutation]);
 
   return {
-    task: taskData?.data?.task as Task | undefined,
+    task: taskData?.data as Task | undefined,
     isLoading,
     error,
     updateTask,
