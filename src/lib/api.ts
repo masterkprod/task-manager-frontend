@@ -7,6 +7,8 @@ import { config } from '@/lib/config';
  */
 class ApiClient {
   private client: AxiosInstance;
+  private isRefreshing = false;
+  private refreshPromise: Promise<void> | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -26,14 +28,14 @@ class ApiClient {
   private setupInterceptors(): void {
     // Interceptor de request para agregar token
     this.client.interceptors.request.use(
-      (config) => {
+      (config: any) => {
         const token = this.getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      (error) => {
+      (error: any) => {
         return Promise.reject(error);
       }
     );
@@ -43,26 +45,56 @@ class ApiClient {
       (response: AxiosResponse) => {
         return response;
       },
-      async (error) => {
+      async (error: any) => {
         const originalRequest = error.config;
 
         // Si el error es 401 y no es un retry, intentar refrescar token
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
-          try {
-            await this.refreshToken();
-            const newToken = this.getToken();
-            if (newToken) {
-              originalRequest.headers.Authorization = `Bearer ${newToken}`;
-              return this.client(originalRequest);
+          // Si ya se está refrescando, esperar a que termine
+          if (this.isRefreshing && this.refreshPromise) {
+            try {
+              await this.refreshPromise;
+              const newToken = this.getToken();
+              if (newToken) {
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                return this.client(originalRequest);
+              }
+            } catch (refreshError) {
+              return Promise.reject(refreshError);
             }
-          } catch (refreshError) {
-            // Si falla el refresh, limpiar tokens y redirigir a login
-            this.clearTokens();
-            if (typeof window !== 'undefined') {
-              window.location.href = '/auth/login';
+          } else {
+            // Iniciar el proceso de refresh
+            this.isRefreshing = true;
+            this.refreshPromise = this.refreshToken();
+
+            try {
+              await this.refreshPromise;
+              const newToken = this.getToken();
+              if (newToken) {
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                return this.client(originalRequest);
+              }
+            } catch (refreshError) {
+              // Si falla el refresh, limpiar tokens y redirigir a login
+              this.clearTokens();
+              if (typeof window !== 'undefined') {
+                window.location.href = '/auth/login';
+              }
+              return Promise.reject(refreshError);
+            } finally {
+              this.isRefreshing = false;
+              this.refreshPromise = null;
             }
+          }
+        }
+
+        // Si es un error 401 y ya se intentó refrescar, limpiar tokens
+        if (error.response?.status === 401 && originalRequest._retry) {
+          this.clearTokens();
+          if (typeof window !== 'undefined') {
+            window.location.href = '/auth/login';
           }
         }
 
@@ -102,6 +134,8 @@ class ApiClient {
     const response = await this.client.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
     if (response.data.success && response.data.data?.accessToken) {
       this.setTokens(response.data.data.accessToken);
+    } else {
+      throw new Error('No se pudo obtener el nuevo token');
     }
   }
 
