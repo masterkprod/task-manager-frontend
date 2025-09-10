@@ -144,15 +144,20 @@ class ApiClient {
    */
   private async refreshToken(): Promise<void> {
     try {
+      console.log('Attempting to refresh token...');
       const response = await this.client.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
+      console.log('Refresh token response:', response.data);
+      
       if (response.data.success && response.data.data?.accessToken) {
         this.setTokens(response.data.data.accessToken);
+        console.log('Token refreshed successfully');
       } else {
         throw new Error('No se pudo obtener el nuevo token');
       }
     } catch (error: any) {
       // Si el refresh falla, es probable que no haya refresh token válido
       console.warn('Refresh token failed:', error.response?.data?.message || error.message);
+      console.warn('Refresh token error details:', error.response?.data);
       throw error;
     }
   }

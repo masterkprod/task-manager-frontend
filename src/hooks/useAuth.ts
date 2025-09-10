@@ -18,8 +18,8 @@ export function useAuth() {
   const { data: profileData, isLoading: isProfileLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: () => apiClient.getProfile(),
-    enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken') && !!user,
-    retry: false,
+    enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
+    retry: 1, // Permitir un reintento
     staleTime: 5 * 60 * 1000, // 5 minutos
   });
 
@@ -35,6 +35,9 @@ export function useAuth() {
   useEffect(() => {
     if (profileError) {
       console.warn('Profile error:', profileError);
+      console.warn('Profile error response:', profileError.response?.data);
+      console.warn('Current token:', typeof window !== 'undefined' ? localStorage.getItem('accessToken') : 'N/A');
+      
       if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
       }
@@ -46,11 +49,17 @@ export function useAuth() {
   // Mutation para login
   const loginMutation = useMutation({
     mutationFn: (data: LoginForm) => apiClient.login(data),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response.success && response.data?.user) {
         setUser(response.data.user);
-        // No invalidar queries inmediatamente para evitar loops
         toast.success('¡Bienvenido!');
+        
+        // Esperar un poco para que las cookies se establezcan
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Invalidar y refetch el perfil para asegurar que tenemos los datos más recientes
+        await queryClient.invalidateQueries({ queryKey: ['profile'] });
+        
         router.push('/dashboard');
       }
     },
