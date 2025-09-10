@@ -152,22 +152,31 @@ class ApiClient {
       console.log('Document domain:', document.domain);
       console.log('Document location:', window.location.href);
       
-      // Crear una instancia de axios específica para el refresh con cookies
+      // Intentar obtener el refresh token de las cookies primero
+      const refreshTokenFromCookie = this.getRefreshTokenFromCookie();
+      console.log('Refresh token from cookie:', refreshTokenFromCookie ? 'Found' : 'Not found');
+      
+      // Si no hay refresh token en cookies, intentar obtenerlo del localStorage
+      let refreshToken = refreshTokenFromCookie;
+      if (!refreshToken && typeof window !== 'undefined') {
+        refreshToken = localStorage.getItem('refreshToken');
+        console.log('Refresh token from localStorage:', refreshToken ? 'Found' : 'Not found');
+      }
+      
+      if (!refreshToken) {
+        throw new Error('No se encontró refresh token');
+      }
+      
+      // Crear una instancia de axios específica para el refresh
       const refreshClient = axios.create({
         baseURL: config.api.baseURL,
         timeout: config.api.timeout,
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${refreshToken}`, // Enviar refresh token en header
         },
-        // Configuración adicional para cookies
-        xsrfCookieName: 'refreshToken',
-        xsrfHeaderName: 'X-CSRF-Token',
       });
-      
-      // Intentar obtener el refresh token de las cookies
-      const refreshTokenFromCookie = this.getRefreshTokenFromCookie();
-      console.log('Refresh token from cookie:', refreshTokenFromCookie ? 'Found' : 'Not found');
       
       const response = await refreshClient.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
       console.log('Refresh token response:', response.data);
@@ -226,6 +235,13 @@ class ApiClient {
     const response = await this.client.post<AuthResponse>('/api/auth/login', data);
     if (response.data.success && response.data.data.accessToken) {
       this.setTokens(response.data.data.accessToken);
+      
+      // Intentar obtener el refresh token de las cookies y guardarlo en localStorage
+      const refreshToken = this.getRefreshTokenFromCookie();
+      if (refreshToken && typeof window !== 'undefined') {
+        localStorage.setItem('refreshToken', refreshToken);
+        console.log('Refresh token saved to localStorage');
+      }
     }
     return response.data;
   }
@@ -236,6 +252,13 @@ class ApiClient {
   async logout(): Promise<ApiResponse> {
     const response = await this.client.post<ApiResponse>('/api/auth/logout');
     this.clearTokens();
+    
+    // Limpiar refresh token del localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('refreshToken');
+      console.log('Refresh token removed from localStorage');
+    }
+    
     return response.data;
   }
 
