@@ -28,12 +28,6 @@ export function useAuth() {
     enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
     retry: 1, // Permitir un reintento
     staleTime: 5 * 60 * 1000, // 5 minutos
-    onError: (error) => {
-      console.error('Profile query onError:', error);
-    },
-    onSuccess: (data) => {
-      console.log('Profile query onSuccess:', data);
-    },
   });
 
   // Efecto para actualizar usuario cuando se obtiene el perfil
@@ -42,6 +36,7 @@ export function useAuth() {
     console.log('Profile loading:', isProfileLoading);
     
     if (profileData?.success && profileData.data?.user) {
+      console.log('Profile query onSuccess:', profileData);
       console.log('Setting user from profile data:', profileData.data.user);
       setUser(profileData.data.user);
     }
