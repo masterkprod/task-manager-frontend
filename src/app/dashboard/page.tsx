@@ -20,7 +20,7 @@ export default function DashboardPage() {
   console.log('DashboardPage - isLoadingTasks:', isLoadingTasks);
   console.log('DashboardPage - isLoadingStats:', isLoadingStats);
 
-  const recentTasks = tasks.slice(0, 5);
+  const recentTasks = Array.isArray(tasks) ? tasks.slice(0, 5) : [];
 
   return (
     <div className="space-y-6">
