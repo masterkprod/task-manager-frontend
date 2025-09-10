@@ -18,6 +18,9 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      // Configuración adicional para cookies
+      xsrfCookieName: 'refreshToken',
+      xsrfHeaderName: 'X-CSRF-Token',
     });
 
     this.setupInterceptors();
@@ -146,6 +149,8 @@ class ApiClient {
     try {
       console.log('Attempting to refresh token...');
       console.log('Current cookies:', document.cookie);
+      console.log('Document domain:', document.domain);
+      console.log('Document location:', window.location.href);
       
       // Crear una instancia de axios específica para el refresh con cookies
       const refreshClient = axios.create({
@@ -159,10 +164,12 @@ class ApiClient {
       
       const response = await refreshClient.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
       console.log('Refresh token response:', response.data);
+      console.log('Response headers:', response.headers);
       
       if (response.data.success && response.data.data?.accessToken) {
         this.setTokens(response.data.data.accessToken);
         console.log('Token refreshed successfully');
+        console.log('Cookies after refresh:', document.cookie);
       } else {
         throw new Error('No se pudo obtener el nuevo token');
       }
