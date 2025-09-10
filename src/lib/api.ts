@@ -14,6 +14,7 @@ class ApiClient {
     this.client = axios.create({
       baseURL: config.api.baseURL,
       timeout: config.api.timeout,
+      withCredentials: true, // IMPORTANTE: Para enviar cookies
       headers: {
         'Content-Type': 'application/json',
       },
