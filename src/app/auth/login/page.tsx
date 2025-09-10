@@ -12,9 +12,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { LoginForm } from '@/types';
 
 export default function LoginPage() {
+  console.log('LoginPage component rendered');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoginLoading, isAuthenticated } = useAuth();
   const router = useRouter();
+
+  console.log('LoginPage - isAuthenticated:', isAuthenticated);
+  console.log('LoginPage - isLoginLoading:', isLoginLoading);
 
   const {
     register,
@@ -23,12 +27,15 @@ export default function LoginPage() {
   } = useForm<LoginForm>();
 
   useEffect(() => {
+    console.log('LoginPage useEffect - isAuthenticated changed:', isAuthenticated);
     if (isAuthenticated) {
+      console.log('LoginPage - redirecting to dashboard');
       router.push('/dashboard');
     }
   }, [isAuthenticated, router]);
 
   const onSubmit = (data: LoginForm) => {
+    console.log('LoginPage - onSubmit called with data:', data);
     login(data);
   };
 

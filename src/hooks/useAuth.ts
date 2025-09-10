@@ -9,18 +9,31 @@ import { User, LoginForm, RegisterForm, ProfileForm, ChangePasswordForm } from '
  * Hook para manejo de autenticación
  */
 export function useAuth() {
+  console.log('useAuth hook called');
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const queryClient = useQueryClient();
+  
+  console.log('Current user state:', user);
+  console.log('Current loading state:', isLoading);
 
   // Query para obtener perfil del usuario
   const { data: profileData, isLoading: isProfileLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
-    queryFn: () => apiClient.getProfile(),
+    queryFn: () => {
+      console.log('Profile query function called');
+      return apiClient.getProfile();
+    },
     enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
     retry: 1, // Permitir un reintento
     staleTime: 5 * 60 * 1000, // 5 minutos
+    onError: (error) => {
+      console.error('Profile query onError:', error);
+    },
+    onSuccess: (data) => {
+      console.log('Profile query onSuccess:', data);
+    },
   });
 
   // Efecto para actualizar usuario cuando se obtiene el perfil
