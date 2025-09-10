@@ -20,10 +20,11 @@ for (const [key, value] of Object.entries(requiredEnvVars)) {
   }
 }
 
-// Validar que la URL del API sea válida
-if (!requiredEnvVars.NEXT_PUBLIC_API_URL.startsWith('http')) {
+// Validar que la URL del API sea válida (después de verificar que existe)
+const apiUrl = requiredEnvVars.NEXT_PUBLIC_API_URL;
+if (!apiUrl.startsWith('http')) {
   throw new Error(
-    `❌ URL del API inválida: ${requiredEnvVars.NEXT_PUBLIC_API_URL}\n` +
+    `❌ URL del API inválida: ${apiUrl}\n` +
     `📝 La URL debe comenzar con 'http://' o 'https://'\n` +
     `💡 Ejemplo: http://localhost:5000 o https://tu-backend.com`
   );
