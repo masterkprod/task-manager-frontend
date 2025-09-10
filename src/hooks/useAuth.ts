@@ -20,6 +20,7 @@ export function useAuth() {
     queryFn: () => apiClient.getProfile(),
     enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
     retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutos
   });
 
   // Efecto para actualizar usuario cuando se obtiene el perfil
@@ -43,10 +44,11 @@ export function useAuth() {
   // Mutation para login
   const loginMutation = useMutation({
     mutationFn: (data: LoginForm) => apiClient.login(data),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response.success && response.data?.user) {
         setUser(response.data.user);
-        queryClient.invalidateQueries({ queryKey: ['profile'] });
+        // Invalidar y refetch el perfil para asegurar que tenemos los datos más recientes
+        await queryClient.invalidateQueries({ queryKey: ['profile'] });
         toast.success('¡Bienvenido!');
         router.push('/dashboard');
       }

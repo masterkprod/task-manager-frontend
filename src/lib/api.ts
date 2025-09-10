@@ -53,6 +53,17 @@ class ApiClient {
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
+          // Solo intentar refresh si tenemos un access token
+          const currentToken = this.getToken();
+          if (!currentToken) {
+            // No hay token, redirigir a login
+            this.clearTokens();
+            if (typeof window !== 'undefined') {
+              window.location.href = '/auth/login';
+            }
+            return Promise.reject(error);
+          }
+
           // Si ya se está refrescando, esperar a que termine
           if (this.isRefreshing && this.refreshPromise) {
             try {
@@ -132,11 +143,17 @@ class ApiClient {
    * Refrescar token de acceso
    */
   private async refreshToken(): Promise<void> {
-    const response = await this.client.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
-    if (response.data.success && response.data.data?.accessToken) {
-      this.setTokens(response.data.data.accessToken);
-    } else {
-      throw new Error('No se pudo obtener el nuevo token');
+    try {
+      const response = await this.client.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
+      if (response.data.success && response.data.data?.accessToken) {
+        this.setTokens(response.data.data.accessToken);
+      } else {
+        throw new Error('No se pudo obtener el nuevo token');
+      }
+    } catch (error: any) {
+      // Si el refresh falla, es probable que no haya refresh token válido
+      console.warn('Refresh token failed:', error.response?.data?.message || error.message);
+      throw error;
     }
   }
 
