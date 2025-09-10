@@ -35,7 +35,7 @@ export function useAuth() {
   useEffect(() => {
     if (profileError) {
       console.warn('Profile error:', profileError);
-      console.warn('Profile error response:', profileError.response?.data);
+      console.warn('Profile error response:', (profileError as any).response?.data);
       console.warn('Current token:', typeof window !== 'undefined' ? localStorage.getItem('accessToken') : 'N/A');
       
       if (typeof window !== 'undefined') {
