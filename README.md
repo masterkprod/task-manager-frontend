@@ -74,7 +74,7 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 
 **Para diferentes entornos:**
 - **Desarrollo local**: `http://localhost:5000`
-- **Backend en Render**: `https://task-manager-backend-hqdq.onrender.com`
+- **Backend en Render**: `https://task-manager-backend-hgdg.onrender.com`
 - **Backend personalizado**: `https://tu-dominio.com`
 
 #### Backend (Express.js)
@@ -146,10 +146,10 @@ npm run dev
 ### 7. Backend Disponible
 
 **Backend de demo está desplegado en Render:**
-- **URL**: `https://task-manager-backend-hqdq.onrender.com`
-- **API**: `https://task-manager-backend-hqdq.onrender.com/api`
-- **Documentación**: `https://task-manager-backend-hqdq.onrender.com/api-docs`
-- **Health Check**: `https://task-manager-backend-hqdq.onrender.com/health`
+- **URL**: `https://task-manager-backend-hgdg.onrender.com`
+- **API**: `https://task-manager-backend-hgdg.onrender.com/api`
+- **Documentación**: `https://task-manager-backend-hgdg.onrender.com/api-docs`
+- **Health Check**: `https://task-manager-backend-hgdg.onrender.com/health`
 
 **Credenciales de demostración:**
 - **Usuario**: `usuario@ejemplo.com`
