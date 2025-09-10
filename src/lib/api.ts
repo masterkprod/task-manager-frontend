@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ApiResponse, AuthResponse, PaginatedResponse, Task, TaskStats, User } from '@/types';
+import { config } from '@/lib/config';
 
 /**
  * Cliente API para comunicación con el backend
@@ -9,8 +10,8 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
-      timeout: 10000,
+      baseURL: config.api.baseURL,
+      timeout: config.api.timeout,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -75,7 +76,7 @@ class ApiClient {
    */
   private getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem(config.auth.tokenKey);
   }
 
   /**
@@ -83,7 +84,7 @@ class ApiClient {
    */
   private setTokens(accessToken: string): void {
     if (typeof window === 'undefined') return;
-    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem(config.auth.tokenKey, accessToken);
   }
 
   /**
@@ -91,7 +92,7 @@ class ApiClient {
    */
   private clearTokens(): void {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem(config.auth.tokenKey);
   }
 
   /**

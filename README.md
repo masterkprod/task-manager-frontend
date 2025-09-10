@@ -58,65 +58,90 @@ git clone <tu-repo-url>
 cd task-manager
 ```
 
-### 2. Configurar Backend
+### 2. Configurar Variables de Entorno
 
+#### Frontend (Next.js)
 ```bash
-cd Back
-npm install
+# Crear archivo de configuración
+cp env.example .env.local
 ```
 
-Crear archivo `.env` basado en `env.example`:
+**Configuración requerida:**
+```env
+# URL del backend API (SIN barra final)
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+**Para diferentes entornos:**
+- **Desarrollo local**: `http://localhost:5000`
+- **Backend en Render**: `https://tu-backend.onrender.com`
+- **Backend personalizado**: `https://tu-dominio.com`
+
+#### Backend (Express.js)
 ```bash
+# Crear archivo de configuración
 cp env.example .env
 ```
 
-Configurar variables de entorno:
+**Configuración requerida:**
 ```env
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/task-manager
-JWT_ACCESS_SECRET=access_secret
-JWT_REFRESH_SECRET=refresh_secret
+JWT_ACCESS_SECRET=tu_access_secret_super_seguro
+JWT_REFRESH_SECRET=tu_refresh_secret_super_seguro
 JWT_ACCESS_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 FRONTEND_URL=http://localhost:3000
 ```
 
-Iniciar el servidor:
-```bash
-npm run dev
-```
-
-El backend estará disponible en `http://localhost:5000`
-- API: `http://localhost:5000/api`
-- Documentación Swagger: `http://localhost:5000/api-docs`
-- Health Check: `http://localhost:5000/health`
-
-### 3. Configurar Frontend
+### 3. Instalar Dependencias
 
 ```bash
-cd Front
+# Instalar dependencias del frontend
 npm install
+
+# Si tienes backend separado, instalar también:
+# cd Back && npm install
 ```
 
-Crear archivo `.env.local` basado en `env.example`:
+### 4. Configurar CORS (IMPORTANTE)
+
+**Para que la aplicación funcione correctamente, tu backend DEBE configurar CORS para permitir tu dominio frontend:**
+
+```javascript
+// En tu backend (Express.js)
+const cors = require('cors');
+
+app.use(cors({
+  origin: [
+    'http://localhost:3000',           // Desarrollo local
+    'https://tu-app.vercel.app',       // Producción Vercel
+    'https://tu-dominio.com'           // Tu dominio personalizado
+  ],
+  credentials: true
+}));
+```
+
+### 5. Iniciar la Aplicación
+
 ```bash
-cp env.example .env.local
-```
-
-Configurar variables de entorno:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_APP_NAME=Task Manager
-NEXT_PUBLIC_APP_VERSION=1.0.0
-```
-
-Iniciar el servidor de desarrollo:
-```bash
+# Iniciar servidor de desarrollo
 npm run dev
 ```
 
-El frontend estará disponible en `http://localhost:3000`
+**URLs disponibles:**
+- **Frontend**: `http://localhost:3000`
+- **Backend** (si está local): `http://localhost:5000`
+- **API**: `http://localhost:5000/api`
+- **Documentación**: `http://localhost:5000/api-docs`
+
+### 6. Verificar Configuración
+
+**Para verificar que todo está configurado correctamente:**
+1. Visita `http://localhost:3000?config=true` para ver información de configuración
+2. Revisa la consola del navegador para errores de CORS
+3. Verifica que las variables de entorno estén cargadas correctamente
 
 ## 📁 Estructura del Proyecto
 

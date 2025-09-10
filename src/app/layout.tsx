@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import QueryProvider from '@/components/providers/QueryProvider';
+import ConfigInfo from '@/components/ConfigInfo';
 import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -43,33 +44,36 @@ export default function RootLayout({
             {children}
           </div>
           
-          {/* Toast notifications */}
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#fff',
-                color: '#374151',
-                boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
-                borderRadius: '12px',
-                border: '1px solid #e5e7eb',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#22c55e',
-                  secondary: '#fff',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#fff',
-                },
-              },
-            }}
-          />
-        </QueryProvider>
+              {/* Toast notifications */}
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#fff',
+                    color: '#374151',
+                    boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                  },
+                  success: {
+                    iconTheme: {
+                      primary: '#22c55e',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    iconTheme: {
+                      primary: '#ef4444',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+
+              {/* Config info (solo en desarrollo o con ?config=true) */}
+              <ConfigInfo />
+            </QueryProvider>
       </body>
     </html>
   );
