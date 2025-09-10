@@ -153,7 +153,7 @@ npm run dev
 
 **Credenciales de demostración:**
 - **Usuario**: `usuario@ejemplo.com`
-- **Contraseña**: `password123`
+- **Contraseña**: `Password123`
 
 ## 📁 Estructura del Proyecto
 
