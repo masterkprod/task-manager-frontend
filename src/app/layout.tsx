@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
+import QueryProvider from '@/components/providers/QueryProvider';
 import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   description: 'Aplicación moderna para gestión de tareas con autenticación JWT y roles de usuario',
   keywords: ['task manager', 'gestión de tareas', 'productividad', 'organización'],
   authors: [{ name: 'Tu Nombre' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
     title: 'Task Manager - Gestión de Tareas',
@@ -26,16 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
-// Crear cliente de React Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutos
-    },
-  },
-});
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export default function RootLayout({
   children,
@@ -45,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="h-full">
       <body className={`${inter.className} h-full bg-gradient-to-br from-primary-50 via-white to-secondary-50`}>
-        <QueryClientProvider client={queryClient}>
+        <QueryProvider>
           <div className="min-h-full">
             {children}
           </div>
@@ -76,7 +69,7 @@ export default function RootLayout({
               },
             }}
           />
-        </QueryClientProvider>
+        </QueryProvider>
       </body>
     </html>
   );
