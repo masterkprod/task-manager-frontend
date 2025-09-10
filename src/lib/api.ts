@@ -256,16 +256,22 @@ class ApiClient {
     if (response.data.success && response.data.data.accessToken) {
       this.setTokens(response.data.data.accessToken);
       
-      // Esperar un momento para que las cookies se configuren
-      setTimeout(() => {
-        const refreshToken = this.getRefreshTokenFromCookie();
-        if (refreshToken && typeof window !== 'undefined') {
-          localStorage.setItem('refreshToken', refreshToken);
-          console.log('Refresh token saved to localStorage:', refreshToken.substring(0, 20) + '...');
-        } else {
-          console.warn('Refresh token not found in cookies after login');
-        }
-      }, 1000);
+      // Guardar refresh token en localStorage si está disponible en la respuesta
+      if (response.data.data.refreshToken && typeof window !== 'undefined') {
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+        console.log('Refresh token saved to localStorage from response:', response.data.data.refreshToken.substring(0, 20) + '...');
+      } else {
+        // Fallback: intentar obtener de cookies
+        setTimeout(() => {
+          const refreshToken = this.getRefreshTokenFromCookie();
+          if (refreshToken && typeof window !== 'undefined') {
+            localStorage.setItem('refreshToken', refreshToken);
+            console.log('Refresh token saved to localStorage from cookies:', refreshToken.substring(0, 20) + '...');
+          } else {
+            console.warn('Refresh token not found in response or cookies after login');
+          }
+        }, 1000);
+      }
     }
     return response.data;
   }
