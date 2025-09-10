@@ -145,7 +145,7 @@ npm run dev
 
 ### 7. Backend Disponible
 
-**Tu backend ya está desplegado en Render:**
+**Backend de demo está desplegado en Render:**
 - **URL**: `https://task-manager-backend-hqdq.onrender.com`
 - **API**: `https://task-manager-backend-hqdq.onrender.com/api`
 - **Documentación**: `https://task-manager-backend-hqdq.onrender.com/api-docs`
