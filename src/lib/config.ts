@@ -20,6 +20,15 @@ for (const [key, value] of Object.entries(requiredEnvVars)) {
   }
 }
 
+// Validar que la URL del API sea válida
+if (!requiredEnvVars.NEXT_PUBLIC_API_URL.startsWith('http')) {
+  throw new Error(
+    `❌ URL del API inválida: ${requiredEnvVars.NEXT_PUBLIC_API_URL}\n` +
+    `📝 La URL debe comenzar con 'http://' o 'https://'\n` +
+    `💡 Ejemplo: http://localhost:5000 o https://tu-backend.com`
+  );
+}
+
 // Configuración validada
 export const config = {
   // URL del backend API
@@ -56,7 +65,7 @@ export const config = {
 
 // Función para obtener la URL completa de un endpoint
 export const getApiUrl = (endpoint: string): string => {
-  const baseUrl = config.api.baseURL.replace(/\/$/, ''); // Remover barra final si existe
+  const baseUrl = config.api.baseURL?.replace(/\/$/, '') || ''; // Remover barra final si existe
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   return `${baseUrl}${cleanEndpoint}`;
 };
