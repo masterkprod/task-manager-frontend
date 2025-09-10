@@ -74,7 +74,7 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 
 **Para diferentes entornos:**
 - **Desarrollo local**: `http://localhost:5000`
-- **Backend en Render**: `https://tu-backend.onrender.com`
+- **Backend en Render**: `https://task-manager-backend-hqdq.onrender.com`
 - **Backend personalizado**: `https://tu-dominio.com`
 
 #### Backend (Express.js)
@@ -142,6 +142,18 @@ npm run dev
 1. Visita `http://localhost:3000?config=true` para ver información de configuración
 2. Revisa la consola del navegador para errores de CORS
 3. Verifica que las variables de entorno estén cargadas correctamente
+
+### 7. Backend Disponible
+
+**Tu backend ya está desplegado en Render:**
+- **URL**: `https://task-manager-backend-hqdq.onrender.com`
+- **API**: `https://task-manager-backend-hqdq.onrender.com/api`
+- **Documentación**: `https://task-manager-backend-hqdq.onrender.com/api-docs`
+- **Health Check**: `https://task-manager-backend-hqdq.onrender.com/health`
+
+**Credenciales de demostración:**
+- **Usuario**: `usuario@ejemplo.com`
+- **Contraseña**: `password123`
 
 ## 📁 Estructura del Proyecto
 
