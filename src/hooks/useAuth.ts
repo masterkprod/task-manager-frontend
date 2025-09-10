@@ -15,17 +15,11 @@ export function useAuth() {
   const queryClient = useQueryClient();
 
   // Query para obtener perfil del usuario
-  const { data: profileData, isLoading: isProfileLoading } = useQuery({
+  const { data: profileData, isLoading: isProfileLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: () => apiClient.getProfile(),
     enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
     retry: false,
-    onError: () => {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken');
-      }
-      setUser(null);
-    },
   });
 
   // Efecto para actualizar usuario cuando se obtiene el perfil
@@ -35,6 +29,16 @@ export function useAuth() {
     }
     setIsLoading(isProfileLoading);
   }, [profileData, isProfileLoading]);
+
+  // Efecto para manejar errores del perfil
+  useEffect(() => {
+    if (profileError) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+      }
+      setUser(null);
+    }
+  }, [profileError]);
 
   // Mutation para login
   const loginMutation = useMutation({

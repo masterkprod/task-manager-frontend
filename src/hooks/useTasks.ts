@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import apiClient from '@/lib/api';
@@ -21,25 +21,34 @@ export function useTasks(filters?: TaskFilters) {
     queryKey: ['tasks', currentFilters],
     queryFn: () => apiClient.getTasks(currentFilters),
     placeholderData: (previousData) => previousData,
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Error al cargar tareas';
-      toast.error(message);
-    },
   });
 
   // Query para obtener estadísticas
   const {
     data: statsData,
     isLoading: isLoadingStats,
+    error: statsError,
     refetch: refetchStats,
   } = useQuery({
     queryKey: ['taskStats'],
     queryFn: () => apiClient.getTaskStats(),
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Error al cargar estadísticas';
-      toast.error(message);
-    },
   });
+
+  // Efecto para manejar errores de tareas
+  useEffect(() => {
+    if (tasksError) {
+      const message = (tasksError as any).response?.data?.message || 'Error al cargar tareas';
+      toast.error(message);
+    }
+  }, [tasksError]);
+
+  // Efecto para manejar errores de estadísticas
+  useEffect(() => {
+    if (statsError) {
+      const message = (statsError as any).response?.data?.message || 'Error al cargar estadísticas';
+      toast.error(message);
+    }
+  }, [statsError]);
 
   // Mutation para crear tarea
   const createTaskMutation = useMutation({
@@ -163,11 +172,15 @@ export function useTask(id: string) {
     queryKey: ['task', id],
     queryFn: () => apiClient.getTaskById(id),
     enabled: !!id,
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Error al cargar tarea';
-      toast.error(message);
-    },
   });
+
+  // Efecto para manejar errores de tarea individual
+  useEffect(() => {
+    if (error) {
+      const message = (error as any).response?.data?.message || 'Error al cargar tarea';
+      toast.error(message);
+    }
+  }, [error]);
 
   // Mutation para actualizar tarea
   const updateTaskMutation = useMutation({
