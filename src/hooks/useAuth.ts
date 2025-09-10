@@ -25,7 +25,11 @@ export function useAuth() {
 
   // Efecto para actualizar usuario cuando se obtiene el perfil
   useEffect(() => {
+    console.log('Profile data changed:', profileData);
+    console.log('Profile loading:', isProfileLoading);
+    
     if (profileData?.success && profileData.data?.user) {
+      console.log('Setting user from profile data:', profileData.data.user);
       setUser(profileData.data.user);
     }
     setIsLoading(isProfileLoading);
@@ -50,20 +54,27 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: (data: LoginForm) => apiClient.login(data),
     onSuccess: async (response) => {
+      console.log('Login success response:', response);
+      
       if (response.success && response.data?.user) {
+        console.log('Setting user from login response:', response.data.user);
         setUser(response.data.user);
         toast.success('¡Bienvenido!');
         
         // Esperar un poco para que las cookies se establezcan
+        console.log('Waiting for cookies to be set...');
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Invalidar y refetch el perfil para asegurar que tenemos los datos más recientes
+        console.log('Invalidating profile queries...');
         await queryClient.invalidateQueries({ queryKey: ['profile'] });
         
+        console.log('Redirecting to dashboard...');
         router.push('/dashboard');
       }
     },
     onError: (error: any) => {
+      console.error('Login error:', error);
       const message = error.response?.data?.message || 'Error al iniciar sesión';
       toast.error(message);
     },
