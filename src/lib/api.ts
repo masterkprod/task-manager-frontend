@@ -160,7 +160,14 @@ class ApiClient {
         headers: {
           'Content-Type': 'application/json',
         },
+        // Configuración adicional para cookies
+        xsrfCookieName: 'refreshToken',
+        xsrfHeaderName: 'X-CSRF-Token',
       });
+      
+      // Intentar obtener el refresh token de las cookies
+      const refreshTokenFromCookie = this.getRefreshTokenFromCookie();
+      console.log('Refresh token from cookie:', refreshTokenFromCookie ? 'Found' : 'Not found');
       
       const response = await refreshClient.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
       console.log('Refresh token response:', response.data);
@@ -181,6 +188,22 @@ class ApiClient {
       console.warn('Error message:', error.message);
       throw error;
     }
+  }
+
+  /**
+   * Obtener refresh token de las cookies
+   */
+  private getRefreshTokenFromCookie(): string | null {
+    if (typeof document === 'undefined') return null;
+    
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'refreshToken') {
+        return value;
+      }
+    }
+    return null;
   }
 
   // ===== AUTENTICACIÓN =====
