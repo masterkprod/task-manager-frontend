@@ -33,7 +33,7 @@ Una aplicación moderna y completa para gestión de tareas con autenticación JW
 - **Next.js 14** con App Router
 - **React 18** con TypeScript
 - **TailwindCSS** para estilos
-- **React Query** para manejo de estado
+- **@tanstack/react-query** para manejo de estado
 - **React Hook Form** para formularios
 - **Lucide React** para iconos
 
@@ -118,99 +118,6 @@ npm run dev
 
 El frontend estará disponible en `http://localhost:3000`
 
-## 📚 Documentación de la API
-
-### Endpoints Principales
-
-#### Autenticación
-- `POST /api/auth/register` - Registro de usuario
-- `POST /api/auth/login` - Inicio de sesión
-- `POST /api/auth/logout` - Cerrar sesión
-- `POST /api/auth/refresh` - Refrescar token
-- `GET /api/auth/profile` - Obtener perfil
-
-#### Usuarios
-- `PUT /api/users/profile` - Actualizar perfil
-- `PUT /api/users/change-password` - Cambiar contraseña
-- `PUT /api/users/deactivate` - Desactivar cuenta
-- `GET /api/users` - Obtener usuarios (admin)
-- `GET /api/users/:id` - Obtener usuario por ID (admin)
-- `PUT /api/users/:id` - Actualizar usuario (admin)
-- `DELETE /api/users/:id` - Eliminar usuario (admin)
-
-#### Tareas
-- `POST /api/tasks` - Crear tarea
-- `GET /api/tasks` - Obtener tareas
-- `GET /api/tasks/stats` - Obtener estadísticas
-- `GET /api/tasks/:id` - Obtener tarea por ID
-- `PUT /api/tasks/:id` - Actualizar tarea
-- `DELETE /api/tasks/:id` - Eliminar tarea
-
-### Colección de Postman
-
-Importa la colección `postman-collection.json` en Postman para probar todos los endpoints.
-
-## 🎨 Características del Diseño
-
-### Paleta de Colores
-- **Primary**: Azul moderno (#3b82f6)
-- **Secondary**: Grises neutros
-- **Success**: Verde (#22c55e)
-- **Warning**: Amarillo (#f59e0b)
-- **Error**: Rojo (#ef4444)
-
-### Componentes UI
-- Botones con variantes y estados
-- Inputs con validación visual
-- Cards con sombras suaves
-- Badges para estados y prioridades
-- Modales responsivos
-- Sidebar colapsible
-
-### Animaciones
-- Fade in para elementos
-- Slide in para modales
-- Bounce in para notificaciones
-- Transiciones suaves en hover
-
-## 🚀 Deployment
-
-### Frontend en Vercel
-
-1. Conecta tu repositorio a Vercel
-2. Configura las variables de entorno:
-   - `NEXT_PUBLIC_API_URL`: URL de tu backend en Render
-3. Deploy automático en cada push
-
-### Backend en Render
-
-1. Conecta tu repositorio a Render
-2. Usa el archivo `render.yaml` para configuración automática
-3. Configura las variables de entorno en el dashboard
-4. Deploy automático en cada push
-
-### Base de Datos
-
-- **Desarrollo**: MongoDB local o Atlas
-- **Producción**: MongoDB Atlas (recomendado)
-
-## 🧪 Testing
-
-### Backend
-```bash
-cd Back
-npm run lint
-npm run format
-```
-
-### Frontend
-```bash
-cd Front
-npm run lint
-npm run format
-npm run type-check
-```
-
 ## 📁 Estructura del Proyecto
 
 ```
@@ -255,35 +162,19 @@ Task Manager/
 - `npm run format` - Formatear código
 - `npm run type-check` - Verificar tipos
 
-## 🎯 Características para Reclutadores
+## 🚀 Deployment
 
-### Código de Calidad
-- **TypeScript** en todo el stack
-- **ESLint + Prettier** para código consistente
-- **Arquitectura modular** y escalable
-- **Documentación completa** con TSDoc
-- **Manejo de errores** robusto
+### Frontend en Vercel
+1. Conecta tu repositorio a Vercel
+2. Configura las variables de entorno:
+   - `NEXT_PUBLIC_API_URL`: URL de tu backend en Render
+3. Deploy automático en cada push
 
-### Seguridad
-- **JWT con refresh tokens** seguros
-- **Validación de entrada** exhaustiva
-- **Rate limiting** implementado
-- **Headers de seguridad** con Helmet
-- **Cookies httpOnly** para tokens
-
-### UX/UI
-- **Diseño moderno** y atractivo
-- **Responsive design** completo
-- **Animaciones suaves** y profesionales
-- **Componentes reutilizables**
-- **Accesibilidad** considerada
-
-### DevOps
-- **Docker ready** (configuración incluida)
-- **CI/CD** con GitHub Actions
-- **Deploy automático** en Vercel y Render
-- **Monitoreo** con health checks
-- **Logging** estructurado
+### Backend en Render
+1. Conecta tu repositorio a Render
+2. Usa el archivo `render.yaml` para configuración automática
+3. Configura las variables de entorno en el dashboard
+4. Deploy automático en cada push
 
 ## 📄 Licencia
 
@@ -295,14 +186,6 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - GitHub: [@masterkprod](https://github.com/masterkprod)
 - LinkedIn: [Gonzalo Vega](https://www.linkedin.com/in/gonzalo-jesus-vega/)
 - Email: masterkprod@gmail.com
-
-## 🙏 Agradecimientos
-
-- [Next.js](https://nextjs.org/) por el framework React
-- [TailwindCSS](https://tailwindcss.com/) por el sistema de estilos
-- [Express.js](https://expressjs.com/) por el framework Node.js
-- [MongoDB](https://www.mongodb.com/) por la base de datos
-- [Lucide](https://lucide.dev/) por los iconos
 
 ---
 
