@@ -205,13 +205,19 @@ class ApiClient {
   private getRefreshTokenFromCookie(): string | null {
     if (typeof document === 'undefined') return null;
     
+    console.log('All cookies:', document.cookie);
     const cookies = document.cookie.split(';');
+    console.log('Parsed cookies:', cookies);
+    
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
+      console.log('Cookie name:', name, 'value:', value ? value.substring(0, 20) + '...' : 'empty');
       if (name === 'refreshToken') {
+        console.log('Found refresh token in cookies');
         return value;
       }
     }
+    console.log('Refresh token not found in cookies');
     return null;
   }
 
@@ -236,12 +242,16 @@ class ApiClient {
     if (response.data.success && response.data.data.accessToken) {
       this.setTokens(response.data.data.accessToken);
       
-      // Intentar obtener el refresh token de las cookies y guardarlo en localStorage
-      const refreshToken = this.getRefreshTokenFromCookie();
-      if (refreshToken && typeof window !== 'undefined') {
-        localStorage.setItem('refreshToken', refreshToken);
-        console.log('Refresh token saved to localStorage');
-      }
+      // Esperar un momento para que las cookies se configuren
+      setTimeout(() => {
+        const refreshToken = this.getRefreshTokenFromCookie();
+        if (refreshToken && typeof window !== 'undefined') {
+          localStorage.setItem('refreshToken', refreshToken);
+          console.log('Refresh token saved to localStorage:', refreshToken.substring(0, 20) + '...');
+        } else {
+          console.warn('Refresh token not found in cookies after login');
+        }
+      }, 1000);
     }
     return response.data;
   }
