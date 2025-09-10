@@ -67,6 +67,19 @@ class ApiClient {
             return Promise.reject(error);
           }
 
+          // Verificar si hay refresh token disponible antes de intentar refresh
+          const hasRefreshToken = this.getRefreshTokenFromCookie() || 
+            (typeof window !== 'undefined' && localStorage.getItem('refreshToken'));
+          
+          if (!hasRefreshToken) {
+            console.log('No refresh token available, redirecting to login');
+            this.clearTokens();
+            if (typeof window !== 'undefined') {
+              window.location.href = '/auth/login';
+            }
+            return Promise.reject(error);
+          }
+
           // Si ya se está refrescando, esperar a que termine
           if (this.isRefreshing && this.refreshPromise) {
             try {
@@ -164,6 +177,7 @@ class ApiClient {
       }
       
       if (!refreshToken) {
+        console.log('No refresh token available, skipping refresh');
         throw new Error('No se encontró refresh token');
       }
       
