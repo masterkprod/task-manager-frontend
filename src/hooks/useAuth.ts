@@ -18,7 +18,7 @@ export function useAuth() {
   const { data: profileData, isLoading: isProfileLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: () => apiClient.getProfile(),
-    enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
+    enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken') && !!user,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutos
   });
@@ -34,21 +34,22 @@ export function useAuth() {
   // Efecto para manejar errores del perfil
   useEffect(() => {
     if (profileError) {
+      console.warn('Profile error:', profileError);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
       }
       setUser(null);
+      setIsLoading(false);
     }
   }, [profileError]);
 
   // Mutation para login
   const loginMutation = useMutation({
     mutationFn: (data: LoginForm) => apiClient.login(data),
-    onSuccess: async (response) => {
+    onSuccess: (response) => {
       if (response.success && response.data?.user) {
         setUser(response.data.user);
-        // Invalidar y refetch el perfil para asegurar que tenemos los datos más recientes
-        await queryClient.invalidateQueries({ queryKey: ['profile'] });
+        // No invalidar queries inmediatamente para evitar loops
         toast.success('¡Bienvenido!');
         router.push('/dashboard');
       }
