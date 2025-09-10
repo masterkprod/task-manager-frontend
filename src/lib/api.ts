@@ -145,7 +145,19 @@ class ApiClient {
   private async refreshToken(): Promise<void> {
     try {
       console.log('Attempting to refresh token...');
-      const response = await this.client.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
+      console.log('Current cookies:', document.cookie);
+      
+      // Crear una instancia de axios específica para el refresh con cookies
+      const refreshClient = axios.create({
+        baseURL: config.api.baseURL,
+        timeout: config.api.timeout,
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const response = await refreshClient.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
       console.log('Refresh token response:', response.data);
       
       if (response.data.success && response.data.data?.accessToken) {
@@ -158,6 +170,8 @@ class ApiClient {
       // Si el refresh falla, es probable que no haya refresh token válido
       console.warn('Refresh token failed:', error.response?.data?.message || error.message);
       console.warn('Refresh token error details:', error.response?.data);
+      console.warn('Error code:', error.code);
+      console.warn('Error message:', error.message);
       throw error;
     }
   }

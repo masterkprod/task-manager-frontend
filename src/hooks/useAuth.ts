@@ -42,13 +42,19 @@ export function useAuth() {
       console.warn('Profile error response:', (profileError as any).response?.data);
       console.warn('Current token:', typeof window !== 'undefined' ? localStorage.getItem('accessToken') : 'N/A');
       
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken');
+      // Solo limpiar el usuario si no hay un usuario ya establecido (evitar loop)
+      if (!user) {
+        console.log('No user set, clearing tokens and redirecting to login');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('accessToken');
+        }
+        setUser(null);
+        setIsLoading(false);
+      } else {
+        console.log('User already set, not clearing to avoid loop');
       }
-      setUser(null);
-      setIsLoading(false);
     }
-  }, [profileError]);
+  }, [profileError, user]);
 
   // Mutation para login
   const loginMutation = useMutation({
