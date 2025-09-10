@@ -36,6 +36,9 @@ class ApiClient {
         const token = this.getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+          console.log('Request interceptor - Token added:', token.substring(0, 20) + '...');
+        } else {
+          console.log('Request interceptor - No token available');
         }
         return config;
       },
@@ -199,6 +202,8 @@ class ApiClient {
       if (response.data.success && response.data.data?.accessToken) {
         this.setTokens(response.data.data.accessToken);
         console.log('Token refreshed successfully');
+        console.log('New access token:', response.data.data.accessToken.substring(0, 20) + '...');
+        console.log('Token stored in localStorage:', localStorage.getItem('accessToken') ? 'Yes' : 'No');
         console.log('Cookies after refresh:', document.cookie);
       } else {
         throw new Error('No se pudo obtener el nuevo token');
