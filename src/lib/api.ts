@@ -90,7 +90,8 @@ class ApiClient {
               const newToken = this.getToken();
               if (newToken) {
                 originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                return this.client(originalRequest);
+                // Usar axios directamente para evitar bucles en el interceptor
+                return axios(originalRequest);
               }
             } catch (refreshError) {
               return Promise.reject(refreshError);
@@ -105,7 +106,8 @@ class ApiClient {
               const newToken = this.getToken();
               if (newToken) {
                 originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                return this.client(originalRequest);
+                // Usar axios directamente para evitar bucles en el interceptor
+                return axios(originalRequest);
               }
             } catch (refreshError) {
               // Si falla el refresh, limpiar tokens y redirigir a login
