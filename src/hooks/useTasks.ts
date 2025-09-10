@@ -37,6 +37,7 @@ export function useTasks(filters?: TaskFilters) {
   // Efecto para manejar errores de tareas
   useEffect(() => {
     if (tasksError) {
+      console.error('Tasks error:', tasksError);
       const message = (tasksError as any).response?.data?.message || 'Error al cargar tareas';
       toast.error(message);
     }
@@ -45,6 +46,7 @@ export function useTasks(filters?: TaskFilters) {
   // Efecto para manejar errores de estadísticas
   useEffect(() => {
     if (statsError) {
+      console.error('Stats error:', statsError);
       const message = (statsError as any).response?.data?.message || 'Error al cargar estadísticas';
       toast.error(message);
     }

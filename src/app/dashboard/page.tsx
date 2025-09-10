@@ -10,8 +10,15 @@ import Link from 'next/link';
 import { formatDate, formatRelativeDate, getPriorityColor, getStatusColor } from '@/lib/utils';
 
 export default function DashboardPage() {
+  console.log('DashboardPage component rendered');
   const { user } = useAuth();
   const { tasks, stats, isLoadingTasks, isLoadingStats } = useTasks({ limit: 5 });
+
+  console.log('DashboardPage - user:', user);
+  console.log('DashboardPage - tasks:', tasks);
+  console.log('DashboardPage - stats:', stats);
+  console.log('DashboardPage - isLoadingTasks:', isLoadingTasks);
+  console.log('DashboardPage - isLoadingStats:', isLoadingStats);
 
   const recentTasks = tasks.slice(0, 5);
 
