@@ -122,7 +122,7 @@ export function useTasks(filters?: TaskFilters) {
 
   return {
     // Datos
-    tasks: tasksData?.data || [],
+    tasks: (tasksData?.data || []) as Task[],
     pagination: tasksData?.pagination,
     stats: statsData?.data?.stats as TaskStats | undefined,
     filters: currentFilters,
