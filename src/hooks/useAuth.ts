@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import apiClient from '@/lib/api';
@@ -15,18 +15,18 @@ export function useAuth() {
   const queryClient = useQueryClient();
 
   // Query para obtener perfil del usuario
-  const { data: profileData, isLoading: isProfileLoading } = useQuery(
-    'profile',
-    () => apiClient.getProfile(),
-    {
-      enabled: !!localStorage.getItem('accessToken'),
-      retry: false,
-      onError: () => {
+  const { data: profileData, isLoading: isProfileLoading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => apiClient.getProfile(),
+    enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
+    retry: false,
+    onError: () => {
+      if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
-        setUser(null);
-      },
-    }
-  );
+      }
+      setUser(null);
+    },
+  });
 
   // Efecto para actualizar usuario cuando se obtiene el perfil
   useEffect(() => {
@@ -37,110 +37,98 @@ export function useAuth() {
   }, [profileData, isProfileLoading]);
 
   // Mutation para login
-  const loginMutation = useMutation(
-    (data: LoginForm) => apiClient.login(data),
-    {
-      onSuccess: (response) => {
-        if (response.success && response.data?.user) {
-          setUser(response.data.user);
-          queryClient.invalidateQueries('profile');
-          toast.success('¡Bienvenido!');
-          router.push('/dashboard');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al iniciar sesión';
-        toast.error(message);
-      },
-    }
-  );
+  const loginMutation = useMutation({
+    mutationFn: (data: LoginForm) => apiClient.login(data),
+    onSuccess: (response) => {
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+        toast.success('¡Bienvenido!');
+        router.push('/dashboard');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al iniciar sesión';
+      toast.error(message);
+    },
+  });
 
   // Mutation para registro
-  const registerMutation = useMutation(
-    (data: RegisterForm) => apiClient.register(data),
-    {
-      onSuccess: (response) => {
-        if (response.success && response.data?.user) {
-          setUser(response.data.user);
-          queryClient.invalidateQueries('profile');
-          toast.success('¡Cuenta creada exitosamente!');
-          router.push('/dashboard');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al crear cuenta';
-        toast.error(message);
-      },
-    }
-  );
+  const registerMutation = useMutation({
+    mutationFn: (data: RegisterForm) => apiClient.register(data),
+    onSuccess: (response) => {
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+        toast.success('¡Cuenta creada exitosamente!');
+        router.push('/dashboard');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al crear cuenta';
+      toast.error(message);
+    },
+  });
 
   // Mutation para logout
-  const logoutMutation = useMutation(
-    () => apiClient.logout(),
-    {
-      onSuccess: () => {
-        setUser(null);
-        queryClient.clear();
-        toast.success('Sesión cerrada');
-        router.push('/auth/login');
-      },
-      onError: () => {
-        // Aún así limpiar el estado local
-        setUser(null);
-        queryClient.clear();
-        router.push('/auth/login');
-      },
-    }
-  );
+  const logoutMutation = useMutation({
+    mutationFn: () => apiClient.logout(),
+    onSuccess: () => {
+      setUser(null);
+      queryClient.clear();
+      toast.success('Sesión cerrada');
+      router.push('/auth/login');
+    },
+    onError: () => {
+      // Aún así limpiar el estado local
+      setUser(null);
+      queryClient.clear();
+      router.push('/auth/login');
+    },
+  });
 
   // Mutation para actualizar perfil
-  const updateProfileMutation = useMutation(
-    (data: ProfileForm) => apiClient.updateProfile(data),
-    {
-      onSuccess: (response) => {
-        if (response.success && response.data?.user) {
-          setUser(response.data.user);
-          queryClient.invalidateQueries('profile');
-          toast.success('Perfil actualizado exitosamente');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al actualizar perfil';
-        toast.error(message);
-      },
-    }
-  );
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: ProfileForm) => apiClient.updateProfile(data),
+    onSuccess: (response) => {
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+        toast.success('Perfil actualizado exitosamente');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al actualizar perfil';
+      toast.error(message);
+    },
+  });
 
   // Mutation para cambiar contraseña
-  const changePasswordMutation = useMutation(
-    (data: ChangePasswordForm) => apiClient.changePassword(data),
-    {
-      onSuccess: () => {
-        toast.success('Contraseña actualizada exitosamente');
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al cambiar contraseña';
-        toast.error(message);
-      },
-    }
-  );
+  const changePasswordMutation = useMutation({
+    mutationFn: (data: ChangePasswordForm) => apiClient.changePassword(data),
+    onSuccess: () => {
+      toast.success('Contraseña actualizada exitosamente');
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al cambiar contraseña';
+      toast.error(message);
+    },
+  });
 
   // Mutation para desactivar cuenta
-  const deactivateAccountMutation = useMutation(
-    () => apiClient.deactivateAccount(),
-    {
-      onSuccess: () => {
-        setUser(null);
-        queryClient.clear();
-        toast.success('Cuenta desactivada');
-        router.push('/auth/login');
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al desactivar cuenta';
-        toast.error(message);
-      },
-    }
-  );
+  const deactivateAccountMutation = useMutation({
+    mutationFn: () => apiClient.deactivateAccount(),
+    onSuccess: () => {
+      setUser(null);
+      queryClient.clear();
+      toast.success('Cuenta desactivada');
+      router.push('/auth/login');
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al desactivar cuenta';
+      toast.error(message);
+    },
+  });
 
   // Función para verificar si el usuario está autenticado
   const isAuthenticated = useCallback(() => {
@@ -193,11 +181,11 @@ export function useAuth() {
     updateProfile,
     changePassword,
     deactivateAccount,
-    isLoginLoading: loginMutation.isLoading,
-    isRegisterLoading: registerMutation.isLoading,
-    isLogoutLoading: logoutMutation.isLoading,
-    isUpdateProfileLoading: updateProfileMutation.isLoading,
-    isChangePasswordLoading: changePasswordMutation.isLoading,
-    isDeactivateLoading: deactivateAccountMutation.isLoading,
+    isLoginLoading: loginMutation.isPending,
+    isRegisterLoading: registerMutation.isPending,
+    isLogoutLoading: logoutMutation.isPending,
+    isUpdateProfileLoading: updateProfileMutation.isPending,
+    isChangePasswordLoading: changePasswordMutation.isPending,
+    isDeactivateLoading: deactivateAccountMutation.isPending,
   };
 }

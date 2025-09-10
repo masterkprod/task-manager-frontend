@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import apiClient from '@/lib/api';
 import { Task, TaskForm, TaskFilters, TaskStats } from '@/types';
@@ -17,87 +17,77 @@ export function useTasks(filters?: TaskFilters) {
     isLoading: isLoadingTasks,
     error: tasksError,
     refetch: refetchTasks,
-  } = useQuery(
-    ['tasks', currentFilters],
-    () => apiClient.getTasks(currentFilters),
-    {
-      keepPreviousData: true,
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al cargar tareas';
-        toast.error(message);
-      },
-    }
-  );
+  } = useQuery({
+    queryKey: ['tasks', currentFilters],
+    queryFn: () => apiClient.getTasks(currentFilters),
+    placeholderData: (previousData) => previousData,
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al cargar tareas';
+      toast.error(message);
+    },
+  });
 
   // Query para obtener estadísticas
   const {
     data: statsData,
     isLoading: isLoadingStats,
     refetch: refetchStats,
-  } = useQuery(
-    'taskStats',
-    () => apiClient.getTaskStats(),
-    {
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al cargar estadísticas';
-        toast.error(message);
-      },
-    }
-  );
+  } = useQuery({
+    queryKey: ['taskStats'],
+    queryFn: () => apiClient.getTaskStats(),
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al cargar estadísticas';
+      toast.error(message);
+    },
+  });
 
   // Mutation para crear tarea
-  const createTaskMutation = useMutation(
-    (data: TaskForm) => apiClient.createTask(data),
-    {
-      onSuccess: (response) => {
-        if (response.success) {
-          queryClient.invalidateQueries('tasks');
-          queryClient.invalidateQueries('taskStats');
-          toast.success('Tarea creada exitosamente');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al crear tarea';
-        toast.error(message);
-      },
-    }
-  );
+  const createTaskMutation = useMutation({
+    mutationFn: (data: TaskForm) => apiClient.createTask(data),
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['taskStats'] });
+        toast.success('Tarea creada exitosamente');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al crear tarea';
+      toast.error(message);
+    },
+  });
 
   // Mutation para actualizar tarea
-  const updateTaskMutation = useMutation(
-    ({ id, data }: { id: string; data: Partial<TaskForm> }) => apiClient.updateTask(id, data),
-    {
-      onSuccess: (response) => {
-        if (response.success) {
-          queryClient.invalidateQueries('tasks');
-          queryClient.invalidateQueries('taskStats');
-          toast.success('Tarea actualizada exitosamente');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al actualizar tarea';
-        toast.error(message);
-      },
-    }
-  );
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<TaskForm> }) => apiClient.updateTask(id, data),
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['taskStats'] });
+        toast.success('Tarea actualizada exitosamente');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al actualizar tarea';
+      toast.error(message);
+    },
+  });
 
   // Mutation para eliminar tarea
-  const deleteTaskMutation = useMutation(
-    (id: string) => apiClient.deleteTask(id),
-    {
-      onSuccess: (response) => {
-        if (response.success) {
-          queryClient.invalidateQueries('tasks');
-          queryClient.invalidateQueries('taskStats');
-          toast.success('Tarea eliminada exitosamente');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al eliminar tarea';
-        toast.error(message);
-      },
-    }
-  );
+  const deleteTaskMutation = useMutation({
+    mutationFn: (id: string) => apiClient.deleteTask(id),
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['taskStats'] });
+        toast.success('Tarea eliminada exitosamente');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al eliminar tarea';
+      toast.error(message);
+    },
+  });
 
   // Función para actualizar filtros
   const updateFilters = useCallback((newFilters: Partial<TaskFilters>) => {
@@ -140,9 +130,9 @@ export function useTasks(filters?: TaskFilters) {
     // Estados de carga
     isLoadingTasks,
     isLoadingStats,
-    isCreating: createTaskMutation.isLoading,
-    isUpdating: updateTaskMutation.isLoading,
-    isDeleting: deleteTaskMutation.isLoading,
+    isCreating: createTaskMutation.isPending,
+    isUpdating: updateTaskMutation.isPending,
+    isDeleting: deleteTaskMutation.isPending,
 
     // Errores
     tasksError,
@@ -169,54 +159,48 @@ export function useTask(id: string) {
     isLoading,
     error,
     refetch,
-  } = useQuery(
-    ['task', id],
-    () => apiClient.getTaskById(id),
-    {
-      enabled: !!id,
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al cargar tarea';
-        toast.error(message);
-      },
-    }
-  );
+  } = useQuery({
+    queryKey: ['task', id],
+    queryFn: () => apiClient.getTaskById(id),
+    enabled: !!id,
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al cargar tarea';
+      toast.error(message);
+    },
+  });
 
   // Mutation para actualizar tarea
-  const updateTaskMutation = useMutation(
-    (data: Partial<TaskForm>) => apiClient.updateTask(id, data),
-    {
-      onSuccess: (response) => {
-        if (response.success) {
-          queryClient.invalidateQueries(['task', id]);
-          queryClient.invalidateQueries('tasks');
-          queryClient.invalidateQueries('taskStats');
-          toast.success('Tarea actualizada exitosamente');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al actualizar tarea';
-        toast.error(message);
-      },
-    }
-  );
+  const updateTaskMutation = useMutation({
+    mutationFn: (data: Partial<TaskForm>) => apiClient.updateTask(id, data),
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['task', id] });
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['taskStats'] });
+        toast.success('Tarea actualizada exitosamente');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al actualizar tarea';
+      toast.error(message);
+    },
+  });
 
   // Mutation para eliminar tarea
-  const deleteTaskMutation = useMutation(
-    () => apiClient.deleteTask(id),
-    {
-      onSuccess: (response) => {
-        if (response.success) {
-          queryClient.invalidateQueries('tasks');
-          queryClient.invalidateQueries('taskStats');
-          toast.success('Tarea eliminada exitosamente');
-        }
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.message || 'Error al eliminar tarea';
-        toast.error(message);
-      },
-    }
-  );
+  const deleteTaskMutation = useMutation({
+    mutationFn: () => apiClient.deleteTask(id),
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['taskStats'] });
+        toast.success('Tarea eliminada exitosamente');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Error al eliminar tarea';
+      toast.error(message);
+    },
+  });
 
   // Función para actualizar tarea
   const updateTask = useCallback((data: Partial<TaskForm>) => {
@@ -234,8 +218,8 @@ export function useTask(id: string) {
     error,
     updateTask,
     deleteTask,
-    isUpdating: updateTaskMutation.isLoading,
-    isDeleting: deleteTaskMutation.isLoading,
+    isUpdating: updateTaskMutation.isPending,
+    isDeleting: deleteTaskMutation.isPending,
     refetch,
   };
 }
