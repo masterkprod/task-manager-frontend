@@ -182,10 +182,12 @@ export default function TasksPage() {
                   </div>
                   
                   <div className="text-right text-xs text-secondary-500 ml-4">
-                    <div className="flex items-center mb-1">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {formatDate(task.dueDate)}
-                    </div>
+                    {task.dueDate && (
+                      <div className="flex items-center mb-1">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {formatDate(task.dueDate)}
+                      </div>
+                    )}
                     <div>
                       Creada {formatRelativeDate(task.createdAt)}
                     </div>
