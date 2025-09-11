@@ -109,7 +109,7 @@ export default function StatsPage() {
             ].map((option) => (
               <Button
                 key={option.value}
-                variant={timeRange === option.value ? 'default' : 'outline'}
+                variant={timeRange === option.value ? 'primary' : 'outline'}
                 size="sm"
                 onClick={() => setTimeRange(option.value)}
               >
