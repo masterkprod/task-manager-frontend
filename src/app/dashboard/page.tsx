@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const recentTasks = Array.isArray(tasks) ? tasks.slice(0, 5) : [];
 
   return (
-    <div className="space-y-6 pt-6">
+    <div className="space-y-6">
       {/* Welcome section */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">

@@ -85,7 +85,7 @@ export default function StatsPage() {
   };
 
   return (
-    <div className="space-y-6 pt-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center space-x-4">
         <Link href="/dashboard">
