@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Menu, Bell, Search } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Notifications from '@/components/ui/Notifications';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -13,6 +14,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   return (
     <header className="bg-white border-b border-secondary-200 sticky top-0 z-30">
@@ -42,14 +44,21 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         {/* Right side */}
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="relative p-2"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-error-500 rounded-full"></span>
-          </Button>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="relative p-2"
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 h-3 w-3 bg-error-500 rounded-full"></span>
+            </Button>
+            <Notifications
+              isOpen={notificationsOpen}
+              onClose={() => setNotificationsOpen(false)}
+            />
+          </div>
 
           {/* User menu */}
           <div className="flex items-center space-x-3">
