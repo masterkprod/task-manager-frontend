@@ -40,7 +40,7 @@ export default function DashboardLayout({
       <div className="lg:pl-64">
         <Header onMenuClick={() => setSidebarOpen(true)} />
         
-        <main className="p-4 lg:p-6">
+        <main className="p-4 lg:p-6 pt-0">
           {children}
         </main>
       </div>

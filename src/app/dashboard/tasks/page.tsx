@@ -3,20 +3,24 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTasks } from '@/hooks/useTasks';
-import { CheckSquare, Clock, CheckCircle, AlertTriangle, Plus, Filter, Search, Calendar } from 'lucide-react';
+import { CheckSquare, Clock, CheckCircle, AlertTriangle, Plus, Filter, Search, Calendar, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
+import EditTaskModal from '@/components/ui/EditTaskModal';
 import Link from 'next/link';
 import { formatDate, formatRelativeDate, getPriorityColor, getStatusColor } from '@/lib/utils';
+import { Task } from '@/types';
 
 export default function TasksPage() {
   const { user } = useAuth();
-  const { tasks, isLoadingTasks } = useTasks();
+  const { tasks, isLoadingTasks, updateTask, deleteTask } = useTasks();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 
   // Filtrar tareas
@@ -47,8 +51,30 @@ export default function TasksPage() {
     }
   };
 
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveTask = (taskId: string, updates: any) => {
+    updateTask(taskId, updates);
+    setIsEditModalOpen(false);
+    setEditingTask(null);
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+      deleteTask(taskId);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setEditingTask(null);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -182,15 +208,36 @@ export default function TasksPage() {
                     </div>
                   </div>
                   
-                  <div className="text-right text-xs text-secondary-500 ml-4">
-                    {task.dueDate && (
-                      <div className="flex items-center mb-1">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {formatDate(task.dueDate)}
+                  <div className="flex items-center space-x-4">
+                    <div className="text-right text-xs text-secondary-500">
+                      {task.dueDate && (
+                        <div className="flex items-center mb-1">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {formatDate(task.dueDate)}
+                        </div>
+                      )}
+                      <div>
+                        Creada {formatRelativeDate(task.createdAt)}
                       </div>
-                    )}
-                    <div>
-                      Creada {formatRelativeDate(task.createdAt)}
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditTask(task)}
+                        className="p-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteTask(task._id)}
+                        className="p-2 text-error-600 hover:text-error-700 hover:bg-error-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -223,6 +270,14 @@ export default function TasksPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal de edición */}
+      <EditTaskModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseModal}
+        task={editingTask}
+        onSave={handleSaveTask}
+      />
     </div>
   );
 }
