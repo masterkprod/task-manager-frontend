@@ -16,9 +16,24 @@ export default function StatsPage() {
   
   const [timeRange, setTimeRange] = useState('week');
 
+  // Debug logs
+  console.log('StatsPage - tasks:', tasks);
+  console.log('StatsPage - stats:', stats);
+  console.log('StatsPage - isLoadingTasks:', isLoadingTasks);
+  console.log('StatsPage - isLoadingStats:', isLoadingStats);
+
   // Calcular estadísticas adicionales
   const calculateAdditionalStats = () => {
-    if (!Array.isArray(tasks)) return {};
+    if (!Array.isArray(tasks) || tasks.length === 0) {
+      return {
+        tasksThisWeek: 0,
+        tasksThisMonth: 0,
+        completedThisWeek: 0,
+        completedThisMonth: 0,
+        tasksByPriority: { high: 0, medium: 0, low: 0 },
+        tasksByStatus: { pending: 0, 'in-progress': 0, completed: 0 },
+      };
+    }
 
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
