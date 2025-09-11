@@ -16,11 +16,6 @@ export default function StatsPage() {
   
   const [timeRange, setTimeRange] = useState('week');
 
-  // Debug logs
-  console.log('StatsPage - tasks:', tasks);
-  console.log('StatsPage - stats:', stats);
-  console.log('StatsPage - isLoadingTasks:', isLoadingTasks);
-  console.log('StatsPage - isLoadingStats:', isLoadingStats);
 
   // Calcular estadísticas adicionales
   const calculateAdditionalStats = () => {

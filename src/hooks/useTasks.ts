@@ -131,16 +131,10 @@ export function useTasks(filters?: TaskFilters) {
     refetchStats();
   }, [refetchTasks, refetchStats]);
 
-  // Debug logs
-  console.log('useTasks - tasksData:', tasksData);
-  console.log('useTasks - statsData:', statsData);
-  console.log('useTasks - tasksData?.data:', tasksData?.data);
-  console.log('useTasks - statsData?.data?.stats:', statsData?.data?.stats);
-
   return {
     // Datos
-    tasks: (tasksData?.data || []) as Task[],
-    pagination: tasksData?.pagination,
+    tasks: (tasksData?.data?.tasks || []) as Task[],
+    pagination: tasksData?.data?.pagination,
     stats: statsData?.data?.stats as TaskStats | undefined,
     filters: currentFilters,
 

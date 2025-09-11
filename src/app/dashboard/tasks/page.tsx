@@ -18,11 +18,6 @@ export default function TasksPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
-  // Debug logs
-  console.log('TasksPage - tasks:', tasks);
-  console.log('TasksPage - isLoadingTasks:', isLoadingTasks);
-  console.log('TasksPage - tasks type:', typeof tasks);
-  console.log('TasksPage - tasks isArray:', Array.isArray(tasks));
 
   // Filtrar tareas
   const filteredTasks = Array.isArray(tasks) ? tasks.filter(task => {
