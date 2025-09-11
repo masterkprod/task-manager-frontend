@@ -69,6 +69,14 @@ export interface PaginatedResponse<T> {
   pagination: PaginationResponse;
 }
 
+export interface TasksResponse {
+  success: boolean;
+  data: {
+    tasks: Task[];
+    pagination: PaginationResponse;
+  };
+}
+
 export interface LoginForm {
   email: string;
   password: string;

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { ApiResponse, AuthResponse, PaginatedResponse, Task, TaskStats, User } from '@/types';
+import { ApiResponse, AuthResponse, PaginatedResponse, Task, TaskStats, TasksResponse, User } from '@/types';
 import { config } from '@/lib/config';
 
 /**
@@ -379,8 +379,8 @@ class ApiClient {
   /**
    * Obtener tareas
    */
-  async getTasks(params?: { page?: number; limit?: number; status?: string; priority?: string; search?: string; dueDate?: string; userId?: string }): Promise<PaginatedResponse<Task>> {
-    const response = await this.client.get<PaginatedResponse<Task>>('/api/tasks', { params });
+  async getTasks(params?: { page?: number; limit?: number; status?: string; priority?: string; search?: string; dueDate?: string; userId?: string }): Promise<TasksResponse> {
+    const response = await this.client.get<TasksResponse>('/api/tasks', { params });
     return response.data;
   }
 

@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import apiClient from '@/lib/api';
-import { Task, TaskForm, TaskFilters, TaskStats } from '@/types';
+import { Task, TaskForm, TaskFilters, TaskStats, TasksResponse } from '@/types';
 
 /**
  * Hook para manejo de tareas
@@ -17,7 +17,7 @@ export function useTasks(filters?: TaskFilters) {
     isLoading: isLoadingTasks,
     error: tasksError,
     refetch: refetchTasks,
-  } = useQuery({
+  } = useQuery<TasksResponse>({
     queryKey: ['tasks', currentFilters],
     queryFn: () => apiClient.getTasks(currentFilters),
     placeholderData: (previousData) => previousData,
