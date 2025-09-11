@@ -81,7 +81,11 @@ export default function NewTaskPage() {
     
     try {
       const taskData = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        priority: formData.priority as 'low' | 'medium' | 'high',
+        status: formData.status as 'pending' | 'in-progress' | 'completed',
+        dueDate: formData.dueDate,
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []
       };
       
