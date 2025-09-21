@@ -54,8 +54,8 @@ Una aplicación moderna y completa para gestión de tareas con autenticación JW
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <tu-repo-url>
-cd task-manager
+git clone https://github.com/masterkprod/task-manager-frontend
+cd task-manager-frontend
 ```
 
 ### 2. Configurar Variables de Entorno
